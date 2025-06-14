@@ -12,9 +12,15 @@ class UptimeHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
 def run_uptime_server():
-    server = HTTPServer(("0.0.0.0", 8080), UptimeHandler)
-    print("🌐 Uptime server running on port 8080")
-    server.serve_forever()
+    try:
+        server = HTTPServer(("0.0.0.0", 8080), UptimeHandler)
+        server.serve_forever()
+    except OSError as e:
+        if e.errno == 98:
+            print("⚠️ Uptime server already running on port 8080. Skipping...")
+        else:
+            raise
+
 
 def start_uptime_server():
     thread = threading.Thread(target=run_uptime_server, daemon=True)
